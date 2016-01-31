@@ -1,19 +1,11 @@
-# -*- coding: utf-8 -*-
-from flask import Flask
-from flask.ext.sqlalchemy import SQLAlchemy
+from app import db
+
 import geoalchemy2
 
-from geoalchemy import GeometryColumn, Point, WKTSpatialElement, Geometry
 
-import os
-
-app = Flask(__name__, instance_relative_config=True)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://postgres:testing@localhost/postgres'
-db = SQLAlchemy(app)
-
-
-class tracks(db.Model):
-    id = db.Column('id', db.BigInteger, db.Sequenz(), primary_key=True, index=True, unique=True, autoincrement=True)
+class Tracks(db.Model):
+    __tablename__ = 'tracks'
+    id = db.Column('id', db.BigInteger, db.Sequence('tracks_id_seq'), primary_key=True, index=True, unique=True, autoincrement=True)
     created = db.Column(db.TIMESTAMP, nullable=False)
     uploaded = db.Column(db.TIMESTAMP, nullable=False)
     length = db.Column(db.Numeric(16, 8), nullable=False)
