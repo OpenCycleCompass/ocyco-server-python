@@ -9,8 +9,8 @@ mod = Blueprint('tracks', __name__, url_prefix='/tracks')
 
 @mod.route('/list', methods=['GET'])
 @requires_superuser
-def list():
+def track_list():
     """
     List all tracks in database
     """
-    return jsonify(json_list=Tracks.query.all())
+    return jsonify(tracks=[track.toDict() for track in Tracks.query.all()])
