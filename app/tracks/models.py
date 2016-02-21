@@ -1,6 +1,7 @@
 from app import db
 
 import geoalchemy2
+from app.track_points.models import TrackPoints
 
 
 class Tracks(db.Model):
@@ -38,9 +39,24 @@ class Tracks(db.Model):
     def __repr__(self):
         return '<track %i>' % self.id
 
-    def toDict(self):
+    def to_dict_short(self):
         return {
                 'id': self.id,
                 'name': self.name,
-                # ... TODO
+               }
+
+    def to_dict_long(self, geometry_short=False):
+        if geometry_short:
+            geometry = [point.to_dict_short() for point in TrackPoints.query.filter(TrackPoints.id == self.id).all()]
+        else:
+            geometry = [point.to_dict_long() for point in TrackPoints.query.filter(TrackPoints.id == self.id).all()]
+        return {
+            'id': self.id,
+            'name': self.name,
+            'comment': self.comment,
+            'created': self.created,
+            'length': self.length,
+            'duration': self.duration,
+            'num_points': self.num_points,
+            'geometry': geometry,
                }
