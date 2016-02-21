@@ -6,7 +6,9 @@ from shapely import wkb
 
 class TrackPoints(db.Model):
     __tablename__ = 'track_points'
-    id = db.Column('id', db.BigInteger, db.ForeignKey('tracks.id'), nullable=False, index=True, primary_key=True)
+    _local_id = db.Column('local_id', db.BigInteger, db.Sequence('track_points_local_id_seq'), primary_key=True,
+                          unique=True, autoincrement=True)
+    id = db.Column('id', db.BigInteger, db.ForeignKey('tracks.id'), nullable=False, index=True)
     geom = db.Column(geoalchemy2.Geometry('POINT'), nullable=False, index=True)  # geo index?
     time = db.Column(db.TIMESTAMP, nullable=False)
     altitude = db.Column(db.Numeric(16, 8))
@@ -29,7 +31,6 @@ class TrackPoints(db.Model):
     def to_dict_short(self):
         point = wkb.loads(bytes(self.geom.data))
         return {
-            'name': self.name,
             'lat': point.y,
             'lon': point.x,
             'time': self.time,
@@ -38,7 +39,6 @@ class TrackPoints(db.Model):
     def to_dict_long(self):
         point = wkb.loads(bytes(self.geom.data))
         return {
-            'name': self.name,
             'lat': point.y,
             'lon': point.x,
             'time': self.time,
