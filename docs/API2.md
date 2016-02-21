@@ -15,7 +15,7 @@ Retrieve track list
 |-------|---------|-------------|
 | start | integer | Track to start with (default 0) |
 | num   | integer | number of tracks (default 25, only for administrative users) |
-| raw   | boolean | Return all tracks solely with *track_id* (only authorized users) |
+| raw   | boolean | Return all tracks solely with *id* (only authorized users) |
 | tracks | array of integers | Array of user tracks. The specified private tracks are included. (optional) |
 
 
@@ -23,9 +23,11 @@ Retrieve track list
 
 ```
 {
- "num": 24,
- "tokens": [
-   "ibis_5565ad4e1b81c9.65580696",
+ "start": 20,
+ "num": 10,
+ "tracks": [
+   516161,
+   6161651
  ]
 }
 ```
@@ -38,18 +40,18 @@ Status `200 OK`
 ```
 [
  {
-  "name": "Insert-Name-Here/Ratingen (11.04. ~18h; 64 Punkte)",
-  "track_id": "tra_552950889bdd50.29229851"
+  "id": 981025,
+  "name": "Insert-Name-Here/Ratingen (11.04. ~18h; 64 Punkte)"
  },
  {
-  "name": "Insert-Name-Here/Aachen-Mitte (11.04. ~10h; 104 Punkte)",
-  "track_id": "tra_5528dc4452c511.68030048"
+  "id": 1198196151,
+  "name": "Insert-Name-Here/Aachen-Mitte (11.04. ~10h; 104 Punkte)"
  },
  {<...>}
 ]
 ```
-25 tracks starting at *num* are returned if *raw* is not set.
-If *raw* is set, *num* is ignored.
+*num* tracks starting at *start* are returned if *raw* is not set.
+If *raw* is set, *num* and *start* are ignored.
 
 
 ### Track number
@@ -63,15 +65,17 @@ Get number of tracks
 
 | Name  | Type    | Description |
 |-------|---------|-------------|
-| tokens | array of string | Array of user tokens. Private tracks with specified tokens are included. (optional) |
+| user_track | array of ints | Array of user tracks. Private tracks with specified *id*s are included. (optional) |
 
 
 #### Example
 
 ```
 {
- "tokens": [
-   "ibis_5565ad4e1b81c9.65580696",
+ "tracks": [
+   42,
+   21,
+   561651651,
  ]
 }
 ```
@@ -88,14 +92,14 @@ Status `200 OK`
 ```
 
 Number of public tracks.
-If *tokens* is specified tracks uploaded using this tokens are likewise counted.
+If *tracks* is specified these tracks are likewise counted.
 
 
 ### Get track
 
 Get track including geometry.
 
-    GET /track/<track_id:string>
+    GET /track/<id:int>
 
 
 #### Parameters
@@ -109,13 +113,13 @@ Status `200 OK`
 
 ```
 {
- "track_id": <track_id:string>,
+ "id": <id:int>,
  "name": <name:string>,
  "comment": <comment:string>,
  "created": <inaccurate_date:string>,
- "length": <length_meter:integer>,
- "duration": <duration_seconds:integer>,
- "nodes": <number_of_geo_pts:integer>,
+ "length": <length_meter:float>,
+ "duration": <duration_milliseconds:integer>,
+ "num_points": <number_of_geo_pts:integer>,
  "geometry": [
   {
    "id": 1,
@@ -141,15 +145,23 @@ Add a new track.
 
 | Name  | Type    | Description |
 |-------|---------|-------------|
-| data  | JSON array of JSON objects * | Track data |
+| data  | JSON array of JSON objects (\*) | Track data |
 | public | boolean | Public visibility |
-| token | string | User token retrieved from `GET /token/new` |
 | name | string | Name for the track (optional) |
 | comment | string | Additional comment (optional) |
 | length | float | length in meter |
 | duration | integer | duration in seconds |
+| vibrations | float | duration in seconds |
 
-\* JSON objects containing *lat* (float), *lon* (float), *time* (timestamp/integer) and optional *alt* (float)
+(\*) JSON objects containing:
+* *lat* (float)
+* *lon* (float)
+* *time* (timestamp/integer)
+and optional:
+* *altitude* (float)
+* *accuracy* (float)
+* *velocity* (float)
+* *vibrations* (float) value to quantify street quality
 
 
 #### Response
@@ -159,7 +171,7 @@ Status `200 OK`
 ```
 {
  "success": true,
- "track_id": <track_id:string>,
+ "id": <id:int>,
  "nodes": <number_of_geo_pts:integer>,
  "created": <inaccurate_date:string>
 }
@@ -181,7 +193,7 @@ Status `401 Bad Request`
 
 Delete track.
 
-    DELETE /track/<track_id:string>
+    DELETE /track/<id:int>
 
 
 #### Parameters
@@ -221,59 +233,6 @@ Status `401 Unauthorized`
  "error": "log in first"
 }
 ```
-
-
-## Token
-
-### Create token
-
-Get a new token.
-
-    GET /token/new
-
-
-#### Parameters
-
-*none*
-
-
-#### Response
-
-Status `200 OK`
-
-```
-{
- "token": "ibis_559ad6e4475bd2.01987505",
- "created": 1436210916,
- "expiry": 1751570916
-}
-```
-Returns a new created token including *created* and *expiry* timestamp.
-
-
-### Verify token
-
-Verify a token.
-
-    GET /token/verify/<token:string>
-
-
-#### Parameters
-
-*none*
-
-
-#### Response
-
-Status `200 OK`
-
-```
-{
- "valid": true,
- "expiry": <date:string>
-}
-```
-Returns true if token is valid.
 
 
 ## Routing Profiles

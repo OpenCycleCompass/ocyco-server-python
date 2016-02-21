@@ -2,7 +2,7 @@
 
 ## Considerations
 
-* Do not use *tokens*, instead let the user store his recorded *track ids*.
+* Do not use *tokens*, instead let the user store his recorded track *id*s.
 This is better data protection and tokens are not going to get used for special functions in future.
 * Use *TEXT* for all columns containing strings.
 See [this link](http://www.depesz.com/2010/03/02/charx-vs-varcharx-vs-varchar-vs-text/) for more information.
@@ -45,11 +45,11 @@ This table contains the track points, ordered by track id from *tracks* table.
 |-------|------|-------------|-------------|
 | **id** | (bigserial) | track id | [tracks](#tracks) -> id |
 | **geom** | geometry(POINT,4326) | coordinates of track point | |
+| time | timestamp | timestamp of track point | |
 | altitude | numeric(16,8) | optional altitude of track point | |
 | accuracy | numeric(11,8) | optional accuracy of gps fix (in meter) | |
-| time | timestamp | timestamp of track point | |
 | velocity | numeric(11,8) | optional velocity at tracl point | |
-| shock | numeric(16,8) | optional *shock* value to quantify street quality | |
+| vibrations | numeric(16,8) | optional *vibrations* value to quantify street quality | |
 
 
 #### *users*
