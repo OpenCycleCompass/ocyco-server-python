@@ -138,7 +138,7 @@ Status `200 OK`
 
 Add a new track.
 
-    PUSH /track/add
+    POST /track/add
 
 
 #### Parameters
@@ -151,7 +151,7 @@ Add a new track.
 | comment | string | Additional comment (optional) |
 | length | float | length in meter |
 | duration | integer | duration in seconds |
-| vibrations | float | duration in seconds |
+| vibrations | float | duration in seconds (optional) |
 
 (\*) JSON objects containing:
 * *lat* (float)
@@ -163,6 +163,42 @@ and optional:
 * *velocity* (float)
 * *vibrations* (float) value to quantify street quality
 
+**Example:**
+
+```
+{
+  "data": [
+    {
+      "lat": 10,
+      "lon": 5,
+      "time": "Tue, 02 Feb 2016 12:40:43"
+    },
+    {
+      "lat": 11,
+      "lon": 4,
+      "time": "Tue, 02 Feb 2016 12:41:43"
+    },
+    {
+      "lat": 12,
+      "lon": 3,
+      "time": "Tue, 02 Feb 2016 12:42:43"
+    },
+    {
+      "lat": 13,
+      "lon": 4,
+      "time": "Tue, 02 Feb 2016 12:43:43"
+    },
+    {
+      "lat": 13.500,
+      "lon": 5.25000,
+      "time": "Tue, 02 Feb 2016 12:44:43"
+    }
+  ],
+  "public": true,
+  "length": 4.242424,
+  "duration": 1902
+}
+```
 
 #### Response
 
@@ -172,14 +208,14 @@ Status `200 OK`
 {
  "success": true,
  "id": <id:int>,
- "nodes": <number_of_geo_pts:integer>,
+ "num_points": <number_of_geo_pts:integer>,
  "created": <inaccurate_date:string>
 }
 ```
 
 or in case of failure
 
-Status `401 Bad Request`
+Status `400 Bad Request`
 
 ```
 {
@@ -208,7 +244,7 @@ Status `200 OK`
 ```
 {
  "success": true,
- "nodes": 42
+ "num_points": 42
 }
 ```
 
