@@ -32,11 +32,11 @@ except IOError:
 #  main():
 #
 if __name__ == '__main__':
-  application = imp.load_source('ibis', 'app/__init__.py')
-  port = application.ibis.config['PORT']
-  ip = application.ibis.config['IP']
-  app_name = application.ibis.config['APP_NAME']
-  host_name = application.ibis.config['HOST_NAME']
+  application = imp.load_source('app', 'app/__init__.py')
+  port = application.app.config['PORT']
+  ip = application.app.config['IP']
+  app_name = application.app.config['APP_NAME']
+  host_name = application.app.config['HOST_NAME']
 
   fwtype="wsgiref"
   for fw in ("flask"):
@@ -50,9 +50,9 @@ if __name__ == '__main__':
   if fwtype == "flask":
     from flask import Flask
     server = Flask(__name__)
-    server.wsgi_app = application.ibis
+    server.wsgi_app = application.app
     server.run(host=ip, port=port)
 
   else:
     from wsgiref.simple_server import make_server
-    make_server(ip, port, application.ibis).serve_forever()
+    make_server(ip, port, application.app).serve_forever()
