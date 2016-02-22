@@ -11,7 +11,7 @@ else:
 db = SQLAlchemy(app)
 
 # import and register track class
-from app.tracks.views import mod as track_mod
+from .tracks.views import mod as track_mod
 
 
 # TODO: central error handlers
