@@ -1,13 +1,17 @@
+import os
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
-app.config.from_object('config')
+if os.environ.get('OPENSHIFT_APP_DNS') is not None:
+    app.config.from_pyfile('../openshift.cfg')
+else:
+    app.config.from_object('config')
 
 db = SQLAlchemy(app)
 
 # import and register track class
-from app.tracks.views import mod as track_mod
+from .tracks.views import mod as track_mod
 
 
 # TODO: central error handlers
@@ -47,3 +51,7 @@ app.register_blueprint(track_mod)
 
 # When should we do this? -> now (!)
 db.create_all()
+
+
+if __name__ == '__main__' and os.environ['OPENSHIFT_APP_DNS'] is not None:
+    app.run(app.config['IP'], app.config['PORT'])
