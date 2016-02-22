@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 app = Flask(__name__)
 if os.environ.get('OPENSHIFT_APP_DNS') is not None:
-    app.config.from_pyfile('flaskapp.cfg')
+    app.config.from_pyfile('../openshift.cfg')
 else:
     app.config.from_object('config')
 
