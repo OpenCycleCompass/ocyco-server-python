@@ -1,3 +1,4 @@
+from sqlalchemy.orm import relationship
 from app import db
 
 import geoalchemy2
@@ -19,6 +20,7 @@ class Tracks(db.Model):
     data_hash = db.Column(db.Text, unique=True)
     extension_geom = db.Column(geoalchemy2.Geometry('POLYGON'), index=True)  # geo index?
     track_geom = db.Column(geoalchemy2.Geometry('LINESTRING'))
+    children = relationship("TrackPoints", cascade="all,delete", backref="parent")
 
     def __init__(self, created, uploaded, length, duration, num_points, public, name, comment, city, data_hash,
                  extension_geom, track_geom):

@@ -18,7 +18,7 @@ class TrackPoints(db.Model):
 
     def __init__(self, id, lat, lon, time, altitude, accuracy, velocity, vibrations):
         self.id = id
-        self.geom = 'POINT(' + lon + ' ' + lat + ')'
+        self.geom = 'POINT(' + str(lon) + ' ' + str(lat) + ')'
         self.time = time
         self.altitude = altitude
         self.accuracy = accuracy
