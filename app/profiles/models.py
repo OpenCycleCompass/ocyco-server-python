@@ -1,5 +1,6 @@
 from app import db
 
+from app.profile_descriptions.models import ProfileDescriptions
 
 class Profiles(db.Model):
     __tablename__ = 'profiles'
@@ -19,14 +20,13 @@ class Profiles(db.Model):
             'name': self.name,
                }
 
-    def to_dict_long(self, language):
-        # TODO add description
+    def to_dict_long(self, language='de-DE'):
         return {
             'id': self.id,
             'name': self.name,
             'lang': language,
-            'description': 'TODO',
+            'description': self.get_description(language)
                }
 
-    def get_description(self):
-        return self.name + ": [TODO: Description]"
+    def get_description(self, language):
+        return ProfileDescriptions.query.filter(ProfileDescriptions.id == self.id).filter(ProfileDescriptions.language == language).first()
