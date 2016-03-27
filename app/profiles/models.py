@@ -1,6 +1,7 @@
 from app import db
 
 from app.profile_descriptions.models import ProfileDescriptions
+from app.cost_static.models import CostStatic
 
 class Profiles(db.Model):
     __tablename__ = 'profiles'
@@ -20,13 +21,23 @@ class Profiles(db.Model):
             'name': self.name,
                }
 
-    def to_dict_long(self, language='de-DE'):
+    def to_dict_long(self, language):
+        cost_list = []
+        costs = CostStatic.query.filter(CostStatic.profile == self.id).all()
+        for cost in costs:
+            cost_list.append(cost.get_dict())
         return {
             'id': self.id,
             'name': self.name,
-            'lang': language,
-            'description': self.get_description(language)
+            'description': {language: self.get_description(language)},
+            'costs': cost_list,
                }
 
+    def get_name(self):
+        return self.name
+
     def get_description(self, language):
-        return ProfileDescriptions.query.filter(ProfileDescriptions.id == self.id).filter(ProfileDescriptions.language == language).first()
+        return ProfileDescriptions.query\
+            .filter(ProfileDescriptions.id == self.id)\
+            .filter(ProfileDescriptions.language == language)\
+            .first().description
