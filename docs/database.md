@@ -94,7 +94,7 @@ Contains *OSM* way types.
 | **id** | text | *OSM* way type id | |
 
 
-#### *way_types_description*
+#### *way_type_descriptions*
 
 Extended internationalized description for every OSM way type.
 
