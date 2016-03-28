@@ -6,7 +6,7 @@ from app.cost_static.models import CostStatic
 class Profiles(db.Model):
     __tablename__ = 'profiles'
     id = db.Column('id', db.BigInteger, db.Sequence('profiles_id_seq'), primary_key=True, index=True, unique=True, autoincrement=True)
-    name = db.Column(db.Text, nullable=False) # unique?
+    name = db.Column(db.Text, nullable=False, unique=True)
 
     def __init__(self, name):
         # 'id' auto increment

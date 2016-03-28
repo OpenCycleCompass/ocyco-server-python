@@ -1,7 +1,11 @@
 from flask import Blueprint, jsonify, request
 
+from werkzeug.exceptions import abort
+from app import db
+
 from app.profiles.models import Profiles
 from app.way_types.models import WayTypes  # create way_types table (static_cost table depends on it)
+from app.cost_static.models import CostStatic
 
 
 mod = Blueprint('profile', __name__)
@@ -48,6 +52,19 @@ def profile_update(profile_name):
     """
     Update profiles cost
     """
+    profile_id = Profiles.query.filter_by(name=profile_name).first().id
+    way_types_rows = WayTypes.query.all()
+    way_types = []
+    for row in way_types_rows:
+        way_types.append(int(row.id))
     json = request.get_json()
-    # TODO
-    return jsonify({})
+    for cost_id in json:
+        if not int(cost_id) in way_types:
+            abort(401, 'unknown way_type id: ' + cost_id)
+        cost = CostStatic.query.filter_by(profile=profile_id, id=cost_id).first()
+        #TODO: forward/reverse cost !?!
+        cost.cost_forward = json.get(cost_id)
+        cost.cost_reverse = json.get(cost_id)
+        db.session.commit()
+    #TODO: return '204 No Content'
+    return jsonify({'success': True})
