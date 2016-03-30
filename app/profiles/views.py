@@ -6,12 +6,14 @@ from app import db
 from app.profiles.models import Profiles
 from app.way_types.models import WayTypes  # create way_types table (static_cost table depends on it)
 from app.cost_static.models import CostStatic
+from app.profile_descriptions.models import ProfileDescriptions
 
 
 mod = Blueprint('profile', __name__)
 
 # TODO: validate language tag
 # TODO: unknown language error handling
+# TODO: add/modify description to/of existing profile
 
 
 def isfloat(value):
@@ -22,6 +24,11 @@ def isfloat(value):
         return True
     except ValueError:
         return False
+
+
+def is_valid_ietf_language(language):
+    # TODO
+    return True
 
 
 @mod.route('/profiles', methods=['GET'])
@@ -45,7 +52,8 @@ def profiles_list():
 @mod.route('/profiles/<string:profile_name>', methods=['GET'])
 def profile_get(profile_name):
     """
-    Get a profile by name inclusive costs
+    Get profile data by name inclusive costs
+    :param profile_name: the profile name
     """
     # Read JSON from request
     json = request.get_json()
@@ -61,6 +69,7 @@ def profile_get(profile_name):
 def profile_update(profile_name):
     """
     Update profiles cost
+    :param profile_name: the profile name
     """
     profile_id = Profiles.query.filter_by(name=profile_name).first().id
     way_types_rows = WayTypes.query.all()
@@ -101,3 +110,28 @@ def profile_update(profile_name):
             abort(400, 'bad value for amount_dyncost')
     db.session.commit()
     return '', 204
+
+
+@mod.route('/profiles/<string:profile_name>', methods=['PUT'])
+def profile_add(profile_name):
+    """
+    Add a new profile
+    :param profile_name: the new profile name
+    """
+    if Profiles.query.filter_by(name=profile_name).count() > 0:
+        abort(409, 'profile \'' + profile_name + '\' exists already')
+    json = request.get_json()
+    if json is None:
+        abort(400, 'JSON body missing')
+    if 'de-DE' not in json:
+        abort(400, 'description for language \'de-DE\' is mandatory')
+    profile = Profiles(profile_name)
+    db.session.add(profile)
+    db.session.commit()
+    for lang_tag in json:
+        if not is_valid_ietf_language(lang_tag):
+            abort(400, 'invalid IETF language tag: ' + lang_tag)
+        description = ProfileDescriptions(profile.id, lang_tag, json.get(lang_tag))
+        db.session.add(description)
+    db.session.commit()
+    return jsonify({'success': True}), 201

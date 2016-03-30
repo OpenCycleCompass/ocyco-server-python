@@ -433,7 +433,7 @@ Status `401 Bad Request`
 
 ### Add profile
 
-Modify costs and amount of dyncost for a routing profile.
+Add a new routing profile with description(s).
 
     PUT /profiles/<profile_name:string>
 
@@ -441,21 +441,18 @@ Modify costs and amount of dyncost for a routing profile.
 
 | Name  | Type    | Description |
 |-------|---------|-------------|
-| amount_dyncost | float (between 0 and 1) | Influence of dyncost for route calculation (0%...100%) |
-| \<cost_name:string\> | float | cost for way type <cost_name>; default 1, lower means prefer, higher means avoid |
+| \<IETF_language_tag:string\> | String | Profile description in the given language (language *de-DE* is mandatory) |
 
 
 #### Example
 
-    POST /profiles/default
+    PUT /profiles/default
 
 ```
 {
- "amount_dyncost": 0.75,
- "primary": 2.5,
- "secondary": 1.5,
- "grade1": 0.9,
- "grade2": 1.05,
+ "de-DE": "Standardprofil",
+ "en-US": "default profile",
+ "en-GB": "default profile",
  <...>
 }
 ```
@@ -471,7 +468,7 @@ Status `201 Created`
 
 or in case of failure
 
-Status `401 Bad Request`
+Status `400 Bad Request`
 
 ```
 {
@@ -480,6 +477,16 @@ Status `401 Bad Request`
 }
 ```
 
+or
+
+Status `409 Conflict`
+
+```
+{
+  "error": "JSON body missing",
+  "status": "Bad Request"
+}
+```
 
 ### Get Geo Data
 
