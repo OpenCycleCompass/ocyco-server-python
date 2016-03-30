@@ -42,6 +42,14 @@ def not_found(error):
     }), 404
 
 
+@app.errorhandler(409)
+def not_found(error):
+    return jsonify({
+        'status': 'Conflict',
+        'error': error.description
+    }), 409
+
+
 @app.errorhandler(500)
 def not_found(error):
     return jsonify({
