@@ -392,7 +392,8 @@ Modify costs and amount of dyncost for a routing profile.
 | Name  | Type    | Description |
 |-------|---------|-------------|
 | amount_dyncost | float (between 0 and 1) | Influence of dyncost for route calculation (0%...100%) |
-| \<cost_name:string\> | float | cost for way type <cost_name>; default 1, lower means prefer, higher means avoid |
+| \<way_type_id:integer\> | float | cost for way type <way_type_id>; default 1, lower means prefer, higher means avoid |
+| \<way_type_id:integer\> | dictionary | **OR:** dictionary with *forward* and *reverse* key to specify separate cost values |
 
 
 #### Example
@@ -401,11 +402,15 @@ Modify costs and amount of dyncost for a routing profile.
 
 ```
 {
- "amount_dyncost": 0.75,
- "primary": 2.5,
- "secondary": 1.5,
- "grade1": 0.9,
- "grade2": 1.05,
+ 0: 0.75,
+ 1: 2.5,
+ "2: 1.5,
+ 3: 0.9,
+ 4: 1.05,
+ 5: {
+  "reverse": 1000000,
+  "forward": 0.95
+ },
  <...>
 }
 ```

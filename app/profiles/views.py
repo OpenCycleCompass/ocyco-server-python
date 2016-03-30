@@ -58,13 +58,21 @@ def profile_update(profile_name):
     for row in way_types_rows:
         way_types.append(int(row.id))
     json = request.get_json()
+    if json is None:
+        abort(400, 'JSON body missing')
     for cost_id in json:
         if not int(cost_id) in way_types:
-            abort(401, 'unknown way_type id: ' + cost_id)
+            abort(400, 'unknown way_type id: ' + cost_id)
         cost = CostStatic.query.filter_by(profile=profile_id, id=cost_id).first()
-        #TODO: forward/reverse cost !?!
-        cost.cost_forward = json.get(cost_id)
-        cost.cost_reverse = json.get(cost_id)
+        if ('forward' in json.get(cost_id)) and ('reverse' in json.get(cost_id)):
+            cost.cost_forward = json.get(cost_id).get('forward')
+            cost.cost_reverse = json.get(cost_id).get('reverse')
+        else:
+            try:
+                cost_value = float(json.get(cost_id))
+                cost.cost_forward = cost_value
+                cost.cost_reverse = cost_value
+            except ValueError:
+                abort(400, 'bad cost value for way_type ' + cost_id)
         db.session.commit()
-    #TODO: return '204 No Content'
-    return jsonify({'success': True})
+    return '', 204
