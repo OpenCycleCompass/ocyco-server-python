@@ -7,10 +7,12 @@ class Profiles(db.Model):
     __tablename__ = 'profiles'
     id = db.Column('id', db.BigInteger, db.Sequence('profiles_id_seq'), primary_key=True, index=True, unique=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False, unique=True)
+    amount_dyncost = db.Column(db.Numeric(16, 8), nullable=False)
 
-    def __init__(self, name):
+    def __init__(self, name, amount_dyncost=0.0):
         # 'id' auto increment
         self.name = name
+        self.amount_dyncost = amount_dyncost
 
     def __repr__(self):
         return '<profile %i %s>' % self.id, self.name
@@ -31,6 +33,7 @@ class Profiles(db.Model):
             'name': self.name,
             'description': {language: self.get_description(language)},
             'costs': cost_list,
+            'amount_dyncost': float(self.amount_dyncost),
                }
 
     def get_name(self):

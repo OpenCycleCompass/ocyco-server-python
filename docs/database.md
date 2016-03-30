@@ -72,6 +72,7 @@ This table contains one entry per Routing profile with an unique *id* and a name
 |-------|------|-------------|-------------|
 | **id** | bigserial UNIQUE | routing profile (unique) id | |
 | name | text | name of routing profile | |
+| amount_dyncost | numeric(16,8) | amount of dynamic cost | |
 
 
 #### *profile_description*
