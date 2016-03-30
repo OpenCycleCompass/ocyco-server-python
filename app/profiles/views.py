@@ -1,5 +1,8 @@
 from flask import Blueprint, jsonify, request
 
+from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.orm.exc import MultipleResultsFound
+
 from werkzeug.exceptions import abort
 from app import db
 
@@ -57,11 +60,16 @@ def profile_get(profile_name):
     """
     # Read JSON from request
     json = request.get_json()
-    language='de-DE'
+    language=ProfileDescriptions.default_language
     # Check for lang fields present
     if (json is not None) and (not ('lang' in json)):
         language = json.get('lang')
-    profile = Profiles.query.filter(Profiles.name == profile_name).first()
+    try:
+        profile = Profiles.query.filter(Profiles.name == profile_name).one()
+    except MultipleResultsFound:
+        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+    except NoResultFound:
+        abort(404, 'No such profile.')
     return jsonify(profile.to_dict_long(language))
 
 
@@ -71,7 +79,12 @@ def profile_update(profile_name):
     Update profiles cost
     :param profile_name: the profile name
     """
-    profile_id = Profiles.query.filter_by(name=profile_name).first().id
+    try:
+        profile_id = Profiles.query.filter_by(name=profile_name).one().id
+    except MultipleResultsFound:
+        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+    except NoResultFound:
+        abort(404, 'No such profile.')
     way_types_rows = WayTypes.query.all()
     way_types = []
     for row in way_types_rows:
@@ -87,15 +100,18 @@ def profile_update(profile_name):
                 abort(400, 'unknown way_type id: ' + cost_id)
         except ValueError:
             abort(400, 'unknown json key: ' + cost_id)
-        cost = CostStatic.query.filter_by(profile=profile_id, id=cost_id).first()
         if isfloat(json.get(cost_id)):
             cost_value = float(json.get(cost_id))
-            cost.cost_forward = cost_value
-            cost.cost_reverse = cost_value
+            CostStatic.query.filter_by(profile=profile_id, id=cost_id).update({
+                CostStatic.cost_forward: cost_value,
+                CostStatic.cost_reverse: cost_value
+            })
         elif ('forward' in json.get(cost_id)) and ('reverse' in json.get(cost_id)):
             try:
-                cost.cost_forward = float(json.get(cost_id).get('forward'))
-                cost.cost_reverse = float(json.get(cost_id).get('reverse'))
+                CostStatic.query.filter_by(profile=profile_id, id=cost_id).update({
+                    CostStatic.cost_forward: float(json.get(cost_id).get('forward')),
+                    CostStatic.cost_reverse: float(json.get(cost_id).get('reverse'))
+                })
             except ValueError:
                 abort(400, 'bad cost value for way_type ' + cost_id)
         else:
@@ -105,7 +121,7 @@ def profile_update(profile_name):
             amount_dyncost_value = float(json.get('amount_dyncost'))
             if amount_dyncost_value > 1.0 or amount_dyncost_value < 0.0:
                 abort(400, 'amount_dyncost must be in range [0, 1]')
-            db.session.execute(db.update(Profiles, values={Profiles.amount_dyncost: amount_dyncost_value}))
+            Profiles.query.filter_by(id=profile_id).update({Profiles.amount_dyncost: amount_dyncost_value})
         except ValueError:
             abort(400, 'bad value for amount_dyncost')
     db.session.commit()
@@ -123,8 +139,8 @@ def profile_add(profile_name):
     json = request.get_json()
     if json is None:
         abort(400, 'JSON body missing')
-    if 'de-DE' not in json:
-        abort(400, 'description for language \'de-DE\' is mandatory')
+    if ProfileDescriptions.default_language not in json:
+        abort(400, 'description for default language \'' + ProfileDescriptions.default_language + '\' is mandatory')
     profile = Profiles(profile_name)
     db.session.add(profile)
     db.session.commit()
