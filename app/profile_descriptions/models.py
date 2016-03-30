@@ -9,6 +9,8 @@ class ProfileDescriptions(db.Model):
     language = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
 
+    default_language = 'en-US'
+
     def __init__(self, id, language, description):
         # 'id' auto increment
         self.id = id
