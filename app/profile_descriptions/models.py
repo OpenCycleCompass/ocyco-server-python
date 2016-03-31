@@ -9,6 +9,9 @@ class ProfileDescriptions(db.Model):
     language = db.Column(db.Text, nullable=False)
     description = db.Column(db.Text, nullable=False)
 
+    # Unique constraint: (id, language must be unique)
+    # TODO
+
     default_language = 'en-US'
 
     def __init__(self, id, language, description):

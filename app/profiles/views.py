@@ -15,8 +15,6 @@ from app.profile_descriptions.models import ProfileDescriptions
 mod = Blueprint('profile', __name__)
 
 # TODO: validate language tag
-# TODO: unknown language error handling
-# TODO: add/modify description to/of existing profile
 
 
 def isfloat(value):
@@ -149,5 +147,52 @@ def profile_add(profile_name):
             abort(400, 'invalid IETF language tag: ' + lang_tag)
         description = ProfileDescriptions(profile.id, lang_tag, json.get(lang_tag))
         db.session.add(description)
+    db.session.commit()
+    return jsonify({'success': True}), 201
+
+
+@mod.route('/profiles/<string:profile_name>/descriptions', methods=['GET'])
+def profile_descriptions(profile_name):
+    """
+    Get all profiles descriptions
+    :param profile_name: the profile name
+    """
+    try:
+        profile_id = Profiles.query.filter_by(name=profile_name).one().id
+    except MultipleResultsFound:
+        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+    except NoResultFound:
+        abort(404, 'No such profile.')
+    descriptions = ProfileDescriptions.query.filter_by(id=profile_id).all()
+    description_list = {}
+    for description in descriptions:
+        description_list[str(description.language)] = str(description.description)
+    return jsonify(description_list)
+
+
+@mod.route('/profiles/<string:profile_name>/descriptions', methods=['POST'])
+def profile_descriptions_modify(profile_name):
+    """
+    Modify or add (additional) profiles descriptions
+    :param profile_name: the profile name
+    """
+    try:
+        profile_id = Profiles.query.filter_by(name=profile_name).one().id
+    except MultipleResultsFound:
+        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+    except NoResultFound:
+        abort(404, 'No such profile.')
+    json = request.get_json()
+    if json is None:
+        abort(400, 'JSON body missing')
+    for lang_tag in json:
+        if not is_valid_ietf_language(lang_tag):
+            abort(400, 'invalid IETF language tag: ' + lang_tag)
+        description = ProfileDescriptions.query.filter_by(id=profile_id, language=lang_tag).first()
+        if description:
+            description.description = json.get(lang_tag)
+        else:
+            description = ProfileDescriptions(profile_id, lang_tag, json.get(lang_tag))
+            db.session.add(description)
     db.session.commit()
     return jsonify({'success': True}), 201
