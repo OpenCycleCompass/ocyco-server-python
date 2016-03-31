@@ -42,6 +42,14 @@ def not_found(error):
     }), 404
 
 
+@app.errorhandler(405)
+def not_found(error):
+    return jsonify({
+        'status': 'Method Not Allowed',
+        'error': error.description
+    }), 405
+
+
 @app.errorhandler(409)
 def not_found(error):
     return jsonify({
