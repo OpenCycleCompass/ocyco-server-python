@@ -441,7 +441,7 @@ Add a new routing profile with description(s).
 
 | Name  | Type    | Description |
 |-------|---------|-------------|
-| \<IETF_language_tag:string\> | String | Profile description in the given language (language *de-DE* is mandatory) |
+| \<IETF_language_tag:string\> | String | Profile description in the given language (default language (*en-US*) is mandatory) |
 
 
 #### Example
@@ -460,6 +460,7 @@ Add a new routing profile with description(s).
 #### Response
 
 Status `201 Created`
+
 ```
 {
  "success": true
@@ -472,8 +473,19 @@ Status `400 Bad Request`
 
 ```
 {
- "success": false,
- "error": "all costs must be supplied"
+ "status": "Bad Request",
+ "error": "default language is missing"
+}
+```
+
+or
+
+Status `400 Bad Request`
+
+```
+{
+  "error": "JSON body missing",
+  "status": "Bad Request"
 }
 ```
 
@@ -483,10 +495,111 @@ Status `409 Conflict`
 
 ```
 {
+  "error": "Profile 'default' already exists",
+  "status": "Conflict"
+}
+```
+
+
+### Get profile descriptions
+
+Get all descriptions for the specified routing profile.
+
+    GET /profiles/<profile_name:string>/descriptions
+
+
+#### Parameters
+
+None.
+
+
+#### Example
+
+    GET /profiles/default/descriptions
+
+
+#### Response
+Status `200 OK`
+
+```
+{
+ "en-US": "default",
+ "de-DE": "Standard",
+}
+```
+
+
+### Modify profile descriptions
+
+Modify descriptions for the specified routing profile.
+
+    POST /profiles/<profile_name:string>/descriptions
+
+
+#### Parameters
+
+| Name  | Type    | Description |
+|-------|---------|-------------|
+| \<IETF_language_tag:string\> | String | Profile description in the given language to override or add (default language (*en-US*) is mandatory) |
+
+
+#### Example
+
+    POST /profiles/default/descriptions
+
+```
+{
+ "de-DE": "Standardprofil",
+ "en-US": "default profile",
+ "en-GB": "default profile",
+ <...>
+}
+```
+
+
+#### Response
+
+Status `201 Created`
+
+```
+{
+ "success": true
+}
+```
+
+or in case of failure
+
+Status `400 Bad Request`
+
+```
+{
+ "status": "Bad Request",
+ "error": "default language is missing"
+}
+```
+
+or
+
+Status `400 Bad Request`
+
+```
+{
   "error": "JSON body missing",
   "status": "Bad Request"
 }
 ```
+
+or
+
+Status `409 Conflict`
+
+```
+{
+  "error": "Profile 'default' already exists",
+  "status": "Conflict"
+}
+```
+
 
 ### Get Geo Data
 
