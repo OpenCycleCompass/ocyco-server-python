@@ -16,6 +16,9 @@ from .tracks.views import mod as track_mod
 # import and register profile class
 from .profiles.views import mod as profiles_mod
 
+# import and register profile class
+from .geo.views import mod as geo_mod
+
 
 # TODO: central error handlers
 @app.errorhandler(400)
@@ -68,6 +71,7 @@ def not_found(error):
 
 app.register_blueprint(track_mod)
 app.register_blueprint(profiles_mod)
+app.register_blueprint(geo_mod)
 
 # When should we do this? -> now (!)
 db.create_all()
