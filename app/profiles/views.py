@@ -5,6 +5,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from werkzeug.exceptions import abort
 from app import db
+from app.decorators import requires_authentication
 
 from app.profiles.models import Profiles
 from app.way_types.models import WayTypes  # create way_types table (static_cost table depends on it)
@@ -72,6 +73,7 @@ def profile_get(profile_name):
 
 
 @mod.route('/profiles/<string:profile_name>', methods=['POST'])
+@requires_authentication
 def profile_update(profile_name):
     """
     Update profiles cost
@@ -127,6 +129,7 @@ def profile_update(profile_name):
 
 
 @mod.route('/profiles/<string:profile_name>', methods=['PUT'])
+@requires_authentication
 def profile_add(profile_name):
     """
     Add a new profile
@@ -171,6 +174,7 @@ def profile_descriptions(profile_name):
 
 
 @mod.route('/profiles/<string:profile_name>/descriptions', methods=['POST'])
+@requires_authentication
 def profile_descriptions_modify(profile_name):
     """
     Modify or add (additional) profiles descriptions
