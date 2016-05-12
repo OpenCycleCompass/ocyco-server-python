@@ -6,6 +6,7 @@ from sqlalchemy import func, text
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
 from app import db
+from app.decorators import requires_authentication
 from app.tracks.models import Tracks, TrackPoints
 
 mod = Blueprint('track', __name__, url_prefix='/track')
@@ -59,9 +60,11 @@ def track_get(track_id):
 
 
 @mod.route('/<int:track_id>', methods=['DELETE'])
+@requires_authentication
 def track_delete(track_id):
     """
     Delete track from database
+    :param track_id: the track_id of the track to view
     """
     # track_points are automatically deleted because of orm relationship
     try:
