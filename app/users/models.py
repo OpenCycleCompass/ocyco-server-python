@@ -1,16 +1,18 @@
 from app import db
+from passlib.hash import sha512_crypt
 
 
 class Users(db.Model):
     __tablename__ = 'users'
     name = db.Column(db.Text, primary_key=True, unique=True, nullable=False)
-    password = db.Column(db.Text, nullable=False)
+    password_hash = db.Column(db.Text, nullable=False)
     rights = db.Column(db.BigInteger, nullable=False)
     enabled = db.Column(db.Boolean, nullable=False)
 
     def __init__(self, name, password, rights, enabled):
+        hash = sha512_crypt.encrypt(password)
         self.name = name
-        self.password = password
+        self.password_hash = hash
         self.rights = rights
         self.enabled = enabled
 
@@ -29,5 +31,8 @@ class Users(db.Model):
             'enabled': self.enabled,
                }
 
-    def verify_password(self, password_hash):
-        return self.password == password_hash
+    def verify_password(self, password):
+        return sha512_crypt.verify(password, self.password_hash)
+
+    def is_superuser(self):
+        return self.rights >= 100
