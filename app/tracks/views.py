@@ -8,6 +8,7 @@ from werkzeug.exceptions import abort
 from app import db
 from app.decorators import requires_authentication
 from app.tracks.models import Tracks, TrackPoints
+from app.utils import get_city_by_coordinates
 
 mod = Blueprint('track', __name__, url_prefix='/track')
 
@@ -92,19 +93,16 @@ def track_add():
     json = request.get_json()
     # Check for required fields present
     if not (('data' in json) and ('public' in json) and ('length' in json) and ('duration' in json)):
-        # TODO custom error message
         abort(400, 'some fields are missing in json')
     for point in json['data']:
         if not (('lat' in point) and ('lon' in point) and ('time' in point)):
-            # TODO custom error message
             abort(401, 'data array is incorrect')
     # insert Track into database
     if 'created' in json:
         track_created = 0
     else:
         track_created = datetime.datetime.now()
-    # TODO: determinate city (reverse geocoding...)
-    track_city = 'MyCity'
+    track_city = get_city_by_coordinates(json['data'][0]['lon'], json['data'][0]['lat'])
     # Create Linestring of track geometry
     track_geom = ['LINESTRING(']
     for point in json['data']:

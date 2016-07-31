@@ -15,8 +15,6 @@ from app.profile_descriptions.models import ProfileDescriptions
 
 mod = Blueprint('profile', __name__)
 
-# TODO: validate language tag
-
 
 def isfloat(value):
     if not (isinstance(value, str) or isinstance(value, float) or isinstance(value, int)):
@@ -29,7 +27,7 @@ def isfloat(value):
 
 
 def is_valid_ietf_language(language):
-    # TODO
+    # TODO: validate language tag
     return True
 
 

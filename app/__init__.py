@@ -20,7 +20,6 @@ from .profiles.views import mod as profiles_mod
 from .geo.views import mod as geo_mod
 
 
-# TODO: central error handlers
 @app.errorhandler(400)
 def not_found(error):
     return jsonify({
