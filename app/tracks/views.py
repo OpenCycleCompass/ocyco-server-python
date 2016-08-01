@@ -53,10 +53,10 @@ def track_get(track_id):
     """
     try:
         return jsonify(Tracks.query.filter(Tracks.id == track_id).one().to_dict_long())
-    except MultipleResultsFound, e:
+    except MultipleResultsFound:
         # internal server error
         abort(500, 'track exists multiple time in database')
-    except NoResultFound, e:
+    except NoResultFound:
         abort(404, 'track does not exist')
 
 
@@ -77,10 +77,10 @@ def track_delete(track_id):
             'success': True,
             'num_points': track_num_points,
         })
-    except MultipleResultsFound, e:
+    except MultipleResultsFound:
         # internal server error
         abort(500, 'track exists multiple time in database')
-    except NoResultFound, e:
+    except NoResultFound:
         abort(410, 'track does not exist')
 
 
