@@ -6,6 +6,10 @@
 
 Retrieve track list
 
+    POST /track/list
+
+or without parameters
+
     GET /track/list
 
 
@@ -20,6 +24,8 @@ Retrieve track list
 
 
 #### Example
+
+    POST /track/list
 
 ```
 {
@@ -58,6 +64,10 @@ If *raw* is set, *num* and *start* are ignored.
 
 Get number of tracks
 
+    POST /track/num
+
+or without parameters
+
     GET /track/num
 
 
@@ -69,6 +79,8 @@ Get number of tracks
 
 
 #### Example
+
+    POST /track/num
 
 ```
 {
@@ -163,7 +175,9 @@ and optional:
 * *velocity* (float)
 * *vibrations* (float) value to quantify street quality
 
-**Example:**
+#### Example
+
+    POST /track/add
 
 ```
 {
@@ -275,7 +289,11 @@ Status `401 Unauthorized`
 
 ### List of routing profiles
 
-Retrieve list of available routing profiles with description. 
+Retrieve list of available routing profiles with description.
+
+    POST /profiles
+
+or without parameters
 
     GET /profiles
 
@@ -295,7 +313,7 @@ Currently only *de-DE* and *en-US* languages are supported.
 
 #### Example
 
-    GET /profiles
+    POST /profiles
 
 ```
 {
@@ -330,7 +348,11 @@ Status `401 Bad Request`
 
 ### Get costs
 
-Retrieve routing costs for specified routing profile.
+Retrieve routing costs and way type names for specified routing profile.
+
+    POST /profiles/<profile_name:string>
+
+or without parameters
 
     GET /profiles/<profile_name:string>
 
@@ -350,7 +372,7 @@ Currently only *de-DE* and *en-US* languages are supported.
 
 #### Example
 
-    GET /profiles/default
+    POST /profiles/default
 
 ```
 {
@@ -385,7 +407,7 @@ Status `200 OK`
 
 Modify costs and amount of dyncost for a routing profile.
 
-    POST /profiles/<profile_name:string>
+    POST /profiles/update/<profile_name:string>
 
 #### Parameters
 
@@ -398,7 +420,7 @@ Modify costs and amount of dyncost for a routing profile.
 
 #### Example
 
-    POST /profiles/default
+    POST /profiles/update/default
 
 ```
 {
@@ -605,7 +627,7 @@ Status `409 Conflict`
 
 Get segments contained in database.
 
-    GET /geo
+    POST /geo
 
 #### Parameters
 
@@ -619,7 +641,7 @@ Get segments contained in database.
 
 #### Example
 
-    GET /geo
+    POST /geo
 
 ```
 {
@@ -670,7 +692,7 @@ Status `401 Bad Request`
 
 Get profiles specific cost (geo information).
 
-    GET /geo/profiles/<profile_name:string>
+    POST /geo/profiles/<profile_name:string>
 
 #### Parameters
 
@@ -684,7 +706,7 @@ Get profiles specific cost (geo information).
 
 #### Example
 
-    GET /geo/profiles/fastest
+    POST /geo/profiles/fastest
 
 ```
 {
@@ -736,7 +758,7 @@ Status `401 Bad Request`
 
 Get dynamic cost (geo information).
 
-    GET /geo/dyncost
+    POST /geo/dyncost
 
 #### Parameters
 
@@ -750,7 +772,7 @@ Get dynamic cost (geo information).
 
 #### Example
 
-    GET /geo/dyncost
+    POST /geo/dyncost
 
 ```
 {
