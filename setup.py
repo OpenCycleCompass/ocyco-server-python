@@ -1,12 +1,14 @@
 from setuptools import setup
 
 setup(
-    name='iBis-server2',
+    name='OCYCO-Server',
     version='0.0.2',
-    packages=['app', 'app.tracks', 'app.track_points'],
-    url='https://github.com/iBis-project/iBis-server2',
+    packages=['app', 'app.cost_dynamic', 'app.cost_dynamic_precalculated', 'app.cost_static', 'app.geo',
+              'app.profile_descriptions', 'app.profiles', 'app.track_points', 'app.tracks', 'app.users',
+              'app.way_type_descriptions', 'app.way_types'],
+    url='https://github.com/OpenCycleCompass/ocyco-server-python',
     license='AGPLv3',
     author='Raphael Lehmann',
-    author_email='raphael+ibis@rleh.de',
-    description='iBis Server Application - Beta'
+    author_email='postmaster+pythonserver@open-cycle-compass.de',
+    description='Ocyco Server Application - Beta'
 )
