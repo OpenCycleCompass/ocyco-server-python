@@ -23,6 +23,7 @@ from .profiles.views import mod as profiles_mod
 from .geo.views import mod as geo_mod
 from .about.views import mod as about_mod
 from .routing.views import mod as routing_mod
+from .geocoding.views import mod as geocoding_mod
 
 
 @app.errorhandler(400)
@@ -78,6 +79,7 @@ app.register_blueprint(profiles_mod)
 app.register_blueprint(geo_mod)
 app.register_blueprint(about_mod)
 app.register_blueprint(routing_mod)
+app.register_blueprint(geocoding_mod)
 
 # When should we do this? -> now (!)
 db.create_all()
