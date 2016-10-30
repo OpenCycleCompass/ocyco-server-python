@@ -1,5 +1,5 @@
-# iBis-server2
-API server for iBis written in Python
+# OCYCO Server
+API server for Ocyco written in Python
 
 Currently under development.
 
