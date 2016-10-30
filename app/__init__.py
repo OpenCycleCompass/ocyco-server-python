@@ -17,17 +17,12 @@ ocyco_git = subprocess.check_output(['git', 'describe', '--always'])
 ocyco_git_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
 ocyco_start_time = time.time()
 
-# import and register track class
+# import and register track classes
 from .tracks.views import mod as track_mod
-
-# import and register profile class
 from .profiles.views import mod as profiles_mod
-
-# import and register profile class
 from .geo.views import mod as geo_mod
-
-# import and register about class
 from .about.views import mod as about_mod
+from .routing.views import mod as routing_mod
 
 
 @app.errorhandler(400)
@@ -82,6 +77,7 @@ app.register_blueprint(track_mod)
 app.register_blueprint(profiles_mod)
 app.register_blueprint(geo_mod)
 app.register_blueprint(about_mod)
+app.register_blueprint(routing_mod)
 
 # When should we do this? -> now (!)
 db.create_all()
