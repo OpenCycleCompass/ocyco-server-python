@@ -30,20 +30,32 @@ def make_hash(o):
     return hash(tuple(frozenset(sorted(new_o.items()))))
 
 
-@mod.route('/list', methods=['GET'])
+@mod.route('/list', methods=['GET', 'POST'])
 def track_list():
     """
     List all tracks in database
     """
-    return jsonify(tracks=[track.to_dict_short() for track in Tracks.query.all()])
+    if request.method == 'GET':
+        return jsonify(tracks=[track.to_dict_short() for track in Tracks.query.all()])
+    else:
+        # Read JSON from request
+        json = request.get_json()
+        # TODO
+        return jsonify({})
 
 
-@mod.route('/num', methods=['GET'])
+@mod.route('/num', methods=['GET', 'POST'])
 def track_num():
     """
     Count all tracks in database
     """
-    return jsonify(num=db.session.query(func.count(Tracks.id)).scalar())
+    if request.method == 'GET':
+        return jsonify(num=db.session.query(func.count(Tracks.id)).scalar())
+    else:
+        # Read JSON from request
+        json = request.get_json()
+        # TODO
+        return jsonify({})
 
 
 @mod.route('/<int:track_id>', methods=['GET'])
