@@ -6,6 +6,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.exceptions import abort
 from app import db
 from app.decorators import requires_authentication
+from app.utils import is_valid_ietf_language
 
 from app.profiles.models import Profiles
 from app.way_types.models import WayTypes  # create way_types table (static_cost table depends on it)
@@ -24,11 +25,6 @@ def isfloat(value):
         return True
     except ValueError:
         return False
-
-
-def is_valid_ietf_language(language):
-    # TODO: validate language tag
-    return True
 
 
 @mod.route('/profiles', methods=['GET', 'POST'])
