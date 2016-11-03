@@ -160,8 +160,8 @@ def track_add():
     track_id = track.id
     # Insert track point into track_points table
     for point in json['data']:
-        # TODO get time from timestamp
-        db.session.add(TrackPoints(track_id, point['lat'], point['lon'], point['time'], point.get('altitude'),
+        time = datetime.datetime.fromtimestamp(point['time']/1000.0)
+        db.session.add(TrackPoints(track_id, point['lat'], point['lon'], time, point.get('altitude'),
                                    point.get('accuracy'), point.get('velocity'), point.get('vibrations')))
     db.session.commit()
     # query ST_Extent(track_points.geom) and insert into tracks.extension_geom
