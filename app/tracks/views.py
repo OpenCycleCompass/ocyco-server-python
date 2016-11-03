@@ -3,6 +3,7 @@ import copy
 from flask import Blueprint, jsonify, request
 
 from sqlalchemy import func, text
+from sqlalchemy import or_
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
 from app import db
@@ -38,15 +39,19 @@ def track_list():
     json = None
     limit = 25
     offset = 0
+    filters = [Tracks.public == True]
     if request.method == 'POST':
         # Read JSON from request
         json = request.get_json()
-        if 'num' in json:
-            limit = int(json.num)
-        if 'start' in json:
-            offset = int(json.start)
-        # TODO: Do not ignore 'tracks' (users private tracks) parameter
-    tracks = Tracks.query.offset(offset).limit(limit).all()
+        if json is not None:
+            if 'num' in json:
+                limit = int(json.num)
+            if 'start' in json:
+                offset = int(json.start)
+            if 'tracks' in json:
+                for track in json.tracks:
+                    filters.append(Tracks.id == track)
+    tracks = Tracks.query.filter(or_(*filters)).offset(offset).limit(limit).all()
     if json is not None and 'raw' in json and json.raw is True:
         return jsonify(tracks=[track.id for track in tracks])
     else:
@@ -58,15 +63,14 @@ def track_num():
     """
     Count all tracks in database
     """
-    if request.method == 'GET':
-        return jsonify(num=db.session.query(func.count(Tracks.id)).scalar())
-    else:
+    filters = [Tracks.public == True]
+    if request.method == 'POST':
         # Read JSON from request
         json = request.get_json()
         if json is not None and 'tracks' in json:
-            user_tracks = json.tracks
-        # TODO: Do not ignore 'tracks' (users private tracks) parameter
-        return jsonify(num=db.session.query(func.count(Tracks.id)).scalar())
+            for track in json.tracks:
+                filters.append(Tracks.id == track)
+    return jsonify(num=db.session.query(func.count(Tracks.id)).filter(or_(*filters)).scalar())
 
 
 @mod.route('/<int:track_id>', methods=['GET'])
