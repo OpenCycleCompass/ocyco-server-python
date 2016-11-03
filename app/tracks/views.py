@@ -35,13 +35,22 @@ def track_list():
     """
     List all tracks in database
     """
-    if request.method == 'GET':
-        return jsonify(tracks=[track.to_dict_short() for track in Tracks.query.all()])
-    else:
+    json = None
+    limit = 25
+    offset = 0
+    if request.method == 'POST':
         # Read JSON from request
         json = request.get_json()
-        # TODO
-        return jsonify({})
+        if 'num' in json:
+            limit = int(json.num)
+        if 'start' in json:
+            offset = int(json.start)
+        # TODO: Do not ignore 'tracks' (users private tracks) parameter
+    tracks = Tracks.query.offset(offset).limit(limit).all()
+    if json is not None and 'raw' in json and json.raw is True:
+        return jsonify(tracks=[track.id for track in tracks])
+    else:
+        return jsonify(tracks=[track.to_dict_short() for track in tracks])
 
 
 @mod.route('/num', methods=['GET', 'POST'])
@@ -54,8 +63,10 @@ def track_num():
     else:
         # Read JSON from request
         json = request.get_json()
-        # TODO
-        return jsonify({})
+        if json is not None and 'tracks' in json:
+            user_tracks = json.tracks
+        # TODO: Do not ignore 'tracks' (users private tracks) parameter
+        return jsonify(num=db.session.query(func.count(Tracks.id)).scalar())
 
 
 @mod.route('/<int:track_id>', methods=['GET'])
