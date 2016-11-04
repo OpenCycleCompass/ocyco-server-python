@@ -6,6 +6,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 from werkzeug.exceptions import abort
 from app import db
 from app.decorators import requires_authentication
+from app.utils import is_valid_ietf_language
 
 from app.profiles.models import Profiles
 from app.way_types.models import WayTypes  # create way_types table (static_cost table depends on it)
@@ -26,18 +27,17 @@ def isfloat(value):
         return False
 
 
-def is_valid_ietf_language(language):
-    # TODO: validate language tag
-    return True
-
-
-@mod.route('/profiles', methods=['GET'])
+@mod.route('/profiles', methods=['GET', 'POST'])
 def profiles_list():
     """
     List all profiles
     """
-    # Read JSON from request
-    json = request.get_json()
+    # read request body for POST method
+    if request.method == 'POST':
+        # Read JSON from request
+        json = request.get_json()
+    else:
+        json = None
     # language (default is 'de-DE')
     language = 'de-DE'
     # Check for lang fields present
@@ -49,28 +49,32 @@ def profiles_list():
     return jsonify(profile_list)
 
 
-@mod.route('/profiles/<string:profile_name>', methods=['GET'])
+@mod.route('/profiles/<string:profile_name>', methods=['GET', 'POST'])
 def profile_get(profile_name):
     """
     Get profile data by name inclusive costs
     :param profile_name: the profile name
     """
-    # Read JSON from request
-    json = request.get_json()
-    language=ProfileDescriptions.default_language
+    # read request body for POST method
+    if request.method == 'POST':
+        # Read JSON from request
+        json = request.get_json()
+    else:
+        json = None
+    language = ProfileDescriptions.default_language
     # Check for lang fields present
     if (json is not None) and (not ('lang' in json)):
         language = json.get('lang')
     try:
         profile = Profiles.query.filter(Profiles.name == profile_name).one()
+        return jsonify(profile.to_dict_long(language))
     except MultipleResultsFound:
         abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
     except NoResultFound:
         abort(404, 'No such profile.')
-    return jsonify(profile.to_dict_long(language))
 
 
-@mod.route('/profiles/<string:profile_name>', methods=['POST'])
+@mod.route('/profiles/update/<string:profile_name>', methods=['POST'])
 @requires_authentication
 def profile_update(profile_name):
     """

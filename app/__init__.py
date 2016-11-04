@@ -2,6 +2,9 @@ import os
 from flask import Flask, jsonify
 from flask_sqlalchemy import SQLAlchemy
 
+import subprocess
+import time
+
 app = Flask(__name__)
 if os.environ.get('OPENSHIFT_APP_DNS') is not None:
     app.config.from_pyfile('../openshift.cfg')
@@ -10,14 +13,17 @@ else:
 
 db = SQLAlchemy(app)
 
-# import and register track class
+ocyco_git = subprocess.check_output(['git', 'describe', '--always'])
+ocyco_git_branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD'])
+ocyco_start_time = time.time()
+
+# import and register track classes
 from .tracks.views import mod as track_mod
-
-# import and register profile class
 from .profiles.views import mod as profiles_mod
-
-# import and register profile class
 from .geo.views import mod as geo_mod
+from .about.views import mod as about_mod
+from .routing.views import mod as routing_mod
+from .geocoding.views import mod as geocoding_mod
 
 
 @app.errorhandler(400)
@@ -71,6 +77,9 @@ def not_found(error):
 app.register_blueprint(track_mod)
 app.register_blueprint(profiles_mod)
 app.register_blueprint(geo_mod)
+app.register_blueprint(about_mod)
+app.register_blueprint(routing_mod)
+app.register_blueprint(geocoding_mod)
 
 # When should we do this? -> now (!)
 db.create_all()

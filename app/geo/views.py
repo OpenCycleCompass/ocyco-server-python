@@ -59,3 +59,22 @@ def get_geo():
             'coordinates': coordinates_from_linestring(row[2])
         })
     return jsonify({'segment_count': query_result.rowcount, 'segments': segments})
+
+
+@mod.route('/geo/profiles/<string:profile_name>', methods=['POST'])
+def get_geo_profile(profile_name):
+    """
+    Get profiles specific cost (geo information).
+    :param profile_name: the profile name from the url
+    """
+    # TODO
+    return jsonify({})
+
+
+@mod.route('/geo/dyncost', methods=['POST'])
+def get_geo_dyncost():
+    """
+    Get dynamic cost (geo information).
+    """
+    # TODO
+    return jsonify({})
