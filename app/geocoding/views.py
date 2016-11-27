@@ -34,20 +34,13 @@ def geocoding_osm_id():
         if photon_req.status_code != requests.codes.ok:
             abort(500, 'Photon is not responding correctly: Bad status code')
         photon_json = photon_req.json()
+        return jsonify(osm_id=photon_json[u'features'][0][u'properties'][u'osm_id'])
     except ValueError:
         abort(500, 'Photon is not responding correctly: Invalid JSON')
-
-    if not (photon_json is not None and u'features' in photon_json):
-        if len(photon_json[u'features']) == 0:
-            abort(404, 'No osm object found')
-        if not (u'properties' in photon_json[u'features'][0] and
-                u'osm_id' in photon_json[u'features'][0][u'properties']
-                ):
-            abort(500, 'Photon is not responding correctly')
-
-    osm_id = photon_json[u'features'][0][u'properties'][u'osm_id']
-
-    return jsonify(osm_id=osm_id)
+    except IndexError:
+        abort(404, 'No osm object found')
+    except KeyError:
+        abort(500, 'Photon is not responding correctly')
 
 
 @mod.route('/address/<string:address>', methods=['GET'])
@@ -65,25 +58,16 @@ def geocoding_address(address):
         if photon_req.status_code != requests.codes.ok:
             abort(500, 'Photon is not responding correctly: Bad status code')
         photon_json = photon_req.json()
+        osm_id = photon_json[u'features'][0][u'properties'][u'osm_id']
+        lon = photon_json[u'features'][0][u'geometry'][u'coordinates'][0]
+        lat = photon_json[u'features'][0][u'geometry'][u'coordinates'][1]
+        return jsonify(osm_id=osm_id, lon=lon, lat=lat)
     except ValueError:
         abort(500, 'Photon is not responding correctly: Invalid JSON')
-
-    if not (photon_json is not None and u'features' in photon_json):
-        if len(photon_json[u'features']) == 0:
-            abort(404, 'No osm object found')
-        if not (u'properties' in photon_json[u'features'][0] and
-                u'osm_id' in photon_json[u'features'][0][u'properties'] and
-                u'geometry' in photon_json[u'features'][0] and
-                u'coordinates' in photon_json[u'features'][0][u'geometry'] and
-                len(photon_json[u'features'][0][u'geometry'][u'coordinates']) == 2
-                ):
-            abort(500, 'Photon is not responding correctly')
-
-    osm_id = photon_json[u'features'][0][u'properties'][u'osm_id']
-    lon = photon_json[u'features'][0][u'geometry'][u'coordinates'][0]
-    lat = photon_json[u'features'][0][u'geometry'][u'coordinates'][1]
-
-    return jsonify(osm_id=osm_id, lon=lon, lat=lat)
+    except IndexError:
+        abort(404, 'No osm object found')
+    except KeyError:
+        abort(500, 'Photon is not responding correctly')
 
 
 @mod.route('/city', methods=['POST'])
