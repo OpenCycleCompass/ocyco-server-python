@@ -1,0 +1,23 @@
+dist: trusty
+sudo: false
+
+language: python
+python:
+  - "3.5"
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "9.6"
+
+install:
+  - pip install -r requirements.txt
+
+before_script:
+  - psql -U postgres -c 'create database test;'
+  - psql -U postgres -c "create extension postgis"
+  - cp config.travis.py config.py
+
+script:
+  - true
