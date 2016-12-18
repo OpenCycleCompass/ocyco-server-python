@@ -6,3 +6,4 @@
 * Install python dependencies from PyPI: `pip install -r requirements.txt`
 * Copy `config.sample.py` to `config.py` and adapt to your database connection.
 * `python3 ./run.py` to run the ocyco-server locally on port 5000.
+* TODO: How to run test using `pytest`...
