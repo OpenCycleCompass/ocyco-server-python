@@ -9,7 +9,11 @@ app = Flask(__name__)
 if os.environ.get('OPENSHIFT_APP_DNS') is not None:
     app.config.from_pyfile('../openshift.cfg')
 else:
-    app.config.from_object('config')
+    try:
+        app.config.from_object('config')
+    except NotADirectoryError:
+        print('Unable to read ocyco flask config from config.py.')
+        pass
 
 db = SQLAlchemy(app)
 
@@ -81,8 +85,10 @@ app.register_blueprint(about_mod)
 app.register_blueprint(routing_mod)
 app.register_blueprint(geocoding_mod)
 
-# When should we do this? -> now (!)
-db.create_all()
+
+# When/how should we do this? -> manually (!)
+def init_db():
+    db.create_all()
 
 
 if __name__ == '__main__' and os.environ['OPENSHIFT_APP_DNS'] is not None:
