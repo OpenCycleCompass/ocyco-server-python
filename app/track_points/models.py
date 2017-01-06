@@ -1,7 +1,7 @@
 from app import db
 
 import geoalchemy2
-from shapely import wkb
+from app.utils import read_wkb_point
 
 
 class TrackPoints(db.Model):
@@ -29,7 +29,7 @@ class TrackPoints(db.Model):
         return '<trackpoint %i: %s>' % self.id, self.geom
 
     def to_dict_short(self):
-        point = wkb.loads(bytes(self.geom.data))
+        point = read_wkb_point(bytes(self.geom.data))
         return {
             'lat': point.y,
             'lon': point.x,
@@ -37,7 +37,7 @@ class TrackPoints(db.Model):
                }
 
     def to_dict_long(self):
-        point = wkb.loads(bytes(self.geom.data))
+        point = read_wkb_point(bytes(self.geom.data))
         return {
             'lat': point.y,
             'lon': point.x,
