@@ -1,8 +1,8 @@
-from sqlalchemy.orm import relationship
-from app import db
+from ocyco.database import db
 
+from sqlalchemy.orm import relationship
 import geoalchemy2
-from app.track_points.models import TrackPoints
+from ocyco.models.track_points import TrackPoints
 
 
 class Tracks(db.Model):

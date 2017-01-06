@@ -3,7 +3,7 @@ from flask import request, jsonify, Response
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
 
-from app.users.models import Users
+from ocyco.models.users import Users
 
 
 def check_authentication(username, password, superuser=False):

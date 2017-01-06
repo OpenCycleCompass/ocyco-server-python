@@ -1,4 +1,5 @@
-from app import db
+from ocyco.database import db
+
 from passlib.hash import sha512_crypt
 
 

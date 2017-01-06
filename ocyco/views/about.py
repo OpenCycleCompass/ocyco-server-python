@@ -1,6 +1,6 @@
 from flask import Blueprint, jsonify
 
-from app import ocyco_git, ocyco_git_branch, ocyco_start_time
+from ocyco.__about__ import ocyco_git, ocyco_git_branch, ocyco_start_time
 
 mod = Blueprint('about', __name__)
 

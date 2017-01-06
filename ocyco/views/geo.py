@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import text
 
 from werkzeug.exceptions import abort
-from app import db
+from ocyco.database import db
 
 mod = Blueprint('geo', __name__)
 

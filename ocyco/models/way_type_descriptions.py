@@ -1,4 +1,4 @@
-from app import db
+from ocyco.database import db
 
 
 class WayTypeDescriptions(db.Model):

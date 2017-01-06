@@ -1,7 +1,7 @@
-from app import db
+from ocyco.database import db
 
 import geoalchemy2
-from app.utils import read_wkb_point
+from ocyco.utils import read_wkb_point
 
 
 class TrackPoints(db.Model):

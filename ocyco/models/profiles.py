@@ -1,7 +1,7 @@
-from app import db
+from ocyco.database import db
 
-from app.profile_descriptions.models import ProfileDescriptions
-from app.cost_static.models import CostStatic
+from ocyco.models.profile_descriptions import ProfileDescriptions
+from ocyco.models.cost_static import CostStatic
 
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound

@@ -6,10 +6,10 @@ from sqlalchemy import func, text
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
-from app import db
-from app.decorators import requires_authentication
-from app.tracks.models import Tracks, TrackPoints
-from app.utils import get_city_by_coordinates
+from ocyco.database import db
+from ocyco.views.decorators import requires_authentication
+from ocyco.models.tracks import Tracks, TrackPoints
+from ocyco.utils import get_city_by_coordinates
 
 mod = Blueprint('track', __name__, url_prefix='/track')
 
