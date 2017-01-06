@@ -1,14 +1,28 @@
-from setuptools import setup
+#!/usr/bin/env python
+
+from setuptools import setup, find_packages
+
+about = {}
+with open("ocyco/__about__.py") as fp:
+    exec(fp.read(), about)
 
 setup(
-    name='OCYCO-Server',
-    version='0.0.2',
-    packages=['app', 'app.cost_dynamic', 'app.cost_dynamic_precalculated', 'app.cost_static', 'app.geo',
-              'app.profile_descriptions', 'app.profiles', 'app.track_points', 'app.tracks', 'app.users',
-              'app.way_type_descriptions', 'app.way_types'],
-    url='https://github.com/OpenCycleCompass/ocyco-server-python',
-    license='AGPLv3',
-    author='Raphael Lehmann',
-    author_email='postmaster+pythonserver@open-cycle-compass.de',
-    description='Ocyco Server Application - Beta'
+    name=about['__title__'],
+    version=about['__version__'],
+    description=about['__summary__'],
+    author=about['__author__'],
+    author_email=about['__email__'],
+    url=about['__uri__'],
+    packages=find_packages(),
+    install_requires=[
+        'Flask >= 0.10.1',
+        'Flask_SQLAlchemy >= 2.1',
+        'GeoAlchemy2 >= 0.2.5',
+        'SQLAlchemy >= 1.0.11',
+        'Werkzeug >= 0.11.3',
+        'passlib',
+        'psycopg2',
+        'language-tags',
+        'requests',
+    ],
 )
