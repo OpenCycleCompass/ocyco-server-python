@@ -24,5 +24,6 @@ setup(
         'psycopg2',
         'language-tags',
         'requests',
+        'flask_script',
     ],
 )

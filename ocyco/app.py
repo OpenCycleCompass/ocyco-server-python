@@ -3,6 +3,8 @@ import config
 
 from flask import Flask
 
+from ocyco.views import register
+
 
 class Ocyco(Flask):
     def __init__(self, name='ocyco', config_file=None, *args, **kw):
@@ -17,6 +19,8 @@ class Ocyco(Flask):
 
         if config_file:
             self.config.from_pyfile(config_file)
+
+        register(self)
 
     def add_sqlalchemy(self):
         """ Create and configure SQLAlchemy extension """
