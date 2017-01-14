@@ -5,7 +5,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound
 
 from werkzeug.exceptions import abort
 from ocyco.database import db
-from ocyco.views.decorators import requires_authentication
+from ocyco.api.decorators import requires_authentication
 from ocyco.utils import is_valid_ietf_language
 
 from ocyco.models.profiles import Profiles

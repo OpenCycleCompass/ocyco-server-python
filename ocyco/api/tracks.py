@@ -7,7 +7,7 @@ from sqlalchemy import or_
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
 from ocyco.database import db
-from ocyco.views.decorators import requires_authentication
+from ocyco.api.decorators import requires_authentication
 from ocyco.models.tracks import Tracks, TrackPoints
 from ocyco.utils import get_city_by_coordinates
 

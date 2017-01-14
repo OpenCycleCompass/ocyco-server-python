@@ -3,7 +3,7 @@ import config
 
 from flask import Flask
 
-from ocyco.views import register
+from ocyco.api import register
 
 
 class Ocyco(Flask):
