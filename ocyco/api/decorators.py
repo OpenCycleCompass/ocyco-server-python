@@ -4,6 +4,7 @@ from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 from werkzeug.exceptions import abort
 
 from ocyco.models.users import Users
+from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
 
 
 def check_authentication(username, password, superuser=False):
@@ -20,7 +21,7 @@ def check_authentication(username, password, superuser=False):
         else:
             return user.verify_password(password)
     except MultipleResultsFound:
-        abort(500, 'Multiple user with name \'' + username + '\' found.')
+        raise MultipleMatchesException('Multiple user with name \'' + username + '\' found.')
     except NoResultFound:
         return False
 

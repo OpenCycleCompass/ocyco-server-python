@@ -12,6 +12,7 @@ from ocyco.models.profiles import Profiles
 from ocyco.models.way_types import WayTypes  # create way_types table (static_cost table depends on it)
 from ocyco.models.cost_static import CostStatic
 from ocyco.models.profile_descriptions import ProfileDescriptions
+from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
 
 
 mod = Blueprint('profile', __name__)
@@ -69,9 +70,9 @@ def profile_get(profile_name):
         profile = Profiles.query.filter(Profiles.name == profile_name).one()
         return jsonify(profile.to_dict_long(language))
     except MultipleResultsFound:
-        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+        raise MultipleMatchesException('Multiple profiles with name \'' + profile_name + '\' found')
     except NoResultFound:
-        abort(404, 'No such profile.')
+        raise NotFoundException('No such profile')
 
 
 @mod.route('/profiles/update/<string:profile_name>', methods=['POST'])
@@ -84,24 +85,24 @@ def profile_update(profile_name):
     try:
         profile_id = Profiles.query.filter_by(name=profile_name).one().id
     except MultipleResultsFound:
-        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+        raise MultipleMatchesException('Multiple profiles with name \'' + profile_name + '\' found')
     except NoResultFound:
-        abort(404, 'No such profile.')
+        raise NotFoundException('No such profile')
     way_types_rows = WayTypes.query.all()
     way_types = []
     for row in way_types_rows:
         way_types.append(int(row.id))
     json = request.get_json()
     if json is None:
-        abort(400, 'JSON body missing')
+        raise ParameterMissingException('JSON body missing')
     for cost_id in json:
         if cost_id == 'amount_dyncost':
             continue
         try:
             if not int(cost_id) in way_types:
-                abort(400, 'unknown way_type id: ' + cost_id)
+                raise ParameterInvalidException('unknown way_tipe id: ' + cost_id)
         except ValueError:
-            abort(400, 'unknown json key: ' + cost_id)
+            raise ParameterInvalidException('unknown JSON key: ' + cost_id)
         if isfloat(json.get(cost_id)):
             cost_value = float(json.get(cost_id))
             CostStatic.query.filter_by(profile=profile_id, id=cost_id).update({
@@ -115,17 +116,17 @@ def profile_update(profile_name):
                     CostStatic.cost_reverse: float(json.get(cost_id).get('reverse'))
                 })
             except ValueError:
-                abort(400, 'bad cost value for way_type ' + cost_id)
+                raise ParameterInvalidException('bad cost value for way_type' + cost_id)
         else:
-            abort(400, 'bad cost value for way_type ' + cost_id)
+            raise ParameterInvalidException('bad value for way_type ' + cost_id)
     if 'amount_dyncost' in json:
         try:
             amount_dyncost_value = float(json.get('amount_dyncost'))
             if amount_dyncost_value > 1.0 or amount_dyncost_value < 0.0:
-                abort(400, 'amount_dyncost must be in range [0, 1]')
+                raise ParameterInvalidException('amount_dyncost must be in range [0, 1]')
             Profiles.query.filter_by(id=profile_id).update({Profiles.amount_dyncost: amount_dyncost_value})
         except ValueError:
-            abort(400, 'bad value for amount_dyncost')
+            raise ParameterInvalidException('bad value for amound_dyncost')
     db.session.commit()
     return '', 204
 
@@ -138,18 +139,18 @@ def profile_add(profile_name):
     :param profile_name: the new profile name
     """
     if Profiles.query.filter_by(name=profile_name).count() > 0:
-        abort(409, 'profile \'' + profile_name + '\' exists already')
+        raise ConflictExistingObjectException('profile \'' + profile_name + '\' exists already')
     json = request.get_json()
     if json is None:
-        abort(400, 'JSON body missing')
+        raise ParameterMissingException('JSON body missing')
     if ProfileDescriptions.default_language not in json:
-        abort(400, 'description for default language \'' + ProfileDescriptions.default_language + '\' is mandatory')
+        raise ParameterMissingException('description for default language \'' + ProfileDescriptions.default_language + '\' is mandatory')
     profile = Profiles(profile_name)
     db.session.add(profile)
     db.session.commit()
     for lang_tag in json:
         if not is_valid_ietf_language(lang_tag):
-            abort(400, 'invalid IETF language tag: ' + lang_tag)
+            raise ParameterInvalidException('invalid IETF language tag: ' + lang_tag)
         description = ProfileDescriptions(profile.id, lang_tag, json.get(lang_tag))
         db.session.add(description)
     db.session.commit()
@@ -165,9 +166,9 @@ def profile_descriptions(profile_name):
     try:
         profile_id = Profiles.query.filter_by(name=profile_name).one().id
     except MultipleResultsFound:
-        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+        raise MultipleMatchesException('Multiple profiles with name \'' + profile_name + '\' found')
     except NoResultFound:
-        abort(404, 'No such profile.')
+        raise NotFoundException('No such profile')
     descriptions = ProfileDescriptions.query.filter_by(id=profile_id).all()
     description_list = {}
     for description in descriptions:
@@ -185,15 +186,15 @@ def profile_descriptions_modify(profile_name):
     try:
         profile_id = Profiles.query.filter_by(name=profile_name).one().id
     except MultipleResultsFound:
-        abort(500, 'Multiple profiles with name \'' + profile_name + '\' found.')
+        raise MultipleMatchesException('Multiple profiles with name \'' + profile_name + '\' found')
     except NoResultFound:
-        abort(404, 'No such profile.')
+        raise NotFoundException('No such profile')
     json = request.get_json()
     if json is None:
-        abort(400, 'JSON body missing')
+        raise ParameterMissingException('JSON body missing')
     for lang_tag in json:
         if not is_valid_ietf_language(lang_tag):
-            abort(400, 'invalid IETF language tag: ' + lang_tag)
+            raise ParameterInvalidException('invalid IETF language tag: ' + lang_tag)
         description = ProfileDescriptions.query.filter_by(id=profile_id, language=lang_tag).first()
         if description:
             description.description = json.get(lang_tag)

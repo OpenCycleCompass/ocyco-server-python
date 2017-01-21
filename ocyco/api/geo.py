@@ -4,6 +4,7 @@ from sqlalchemy import text
 
 from werkzeug.exceptions import abort
 from ocyco.database import db
+from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
 
 mod = Blueprint('geo', __name__)
 
@@ -41,7 +42,7 @@ def get_geo():
                               and 'start_lon' in json
                               and 'end_lat' in json
                               and 'end_lon' in json):
-        abort(400, 'bounding box missing')
+        raise ParameterMissingException('bounding box missing')
     lat_min = min(json.get('start_lat'), json.get('end_lat'))
     lat_max = max(json.get('start_lat'), json.get('end_lat'))
     lon_min = min(json.get('start_lon'), json.get('end_lon'))
