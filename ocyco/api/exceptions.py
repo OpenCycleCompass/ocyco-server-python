@@ -7,7 +7,7 @@ class OcycoException(Exception):
 
     def to_dict(self):
         rv = dict(self.payload or())
-        rv['message'] = self.message
+        rv['error'] = self.message
         return rv
 
 
