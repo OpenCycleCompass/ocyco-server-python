@@ -1,10 +1,9 @@
 from functools import wraps
 from flask import request, jsonify, Response
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from werkzeug.exceptions import abort
 
 from ocyco.models.users import Users
-from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
+from ocyco.api.exceptions import MultipleMatchesException
 
 
 def check_authentication(username, password, superuser=False):

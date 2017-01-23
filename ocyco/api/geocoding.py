@@ -1,6 +1,5 @@
 from flask import Blueprint, jsonify, request
-from werkzeug.exceptions import abort
-from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
+from ocyco.api.exceptions import ParameterMissingException, NotFoundException, PhotonException
 import requests
 
 mod = Blueprint('geocoding', __name__, url_prefix='/geocoding')
@@ -35,6 +34,8 @@ def geocoding_id():
         raise NotFoundException('No osm object found')
     except KeyError:
         raise PhotonException('Photon is not responding correctly')
+    except requests.ConnectionError:
+        raise PhotonException('Connection to Photon failed')
 
 
 @mod.route('/osm_id', methods=['POST'])
@@ -62,6 +63,8 @@ def geocoding_osm_id():
         raise NotFoundException('No osm object found')
     except KeyError:
         raise PhotonException('Photon is not responding correctly')
+    except requests.ConnectionError:
+        raise PhotonException('Connection to Photon failed')
 
 
 @mod.route('/address/<string:address>', methods=['GET'])
@@ -89,6 +92,9 @@ def geocoding_address(address):
         raise NotFoundException('No osm object found')
     except KeyError:
         raise PhotonException('Photon is not responding correctly')
+    except requests.ConnectionError:
+        raise PhotonException('Connection to Photon failed')
+
 
 @mod.route('/city', methods=['POST'])
 def geocoding_city():
@@ -115,3 +121,5 @@ def geocoding_city():
         raise NotFoundException('No osm object found')
     except KeyError:
         raise PhotonException('Photon is not responding correctly')
+    except requests.ConnectionError:
+        raise PhotonException('Connection to Photon failed')

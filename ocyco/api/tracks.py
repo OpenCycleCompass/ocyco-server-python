@@ -5,12 +5,12 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import func, text
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from werkzeug.exceptions import abort
+
 from ocyco.database import db
 from ocyco.api.decorators import requires_authentication
 from ocyco.models.tracks import Tracks, TrackPoints
 from ocyco.utils import get_city_by_coordinates
-from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
+from ocyco.api.exceptions import ParameterMissingException, NotFoundException, MultipleMatchesException
 
 mod = Blueprint('track', __name__, url_prefix='/track')
 

@@ -3,7 +3,6 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from werkzeug.exceptions import abort
 from ocyco.database import db
 from ocyco.api.decorators import requires_authentication
 from ocyco.utils import is_valid_ietf_language
@@ -12,7 +11,8 @@ from ocyco.models.profiles import Profiles
 from ocyco.models.way_types import WayTypes  # create way_types table (static_cost table depends on it)
 from ocyco.models.cost_static import CostStatic
 from ocyco.models.profile_descriptions import ProfileDescriptions
-from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
+from ocyco.api.exceptions import ParameterInvalidException, ParameterMissingException, NotFoundException,\
+    ConflictExistingObjectException, MultipleMatchesException
 
 
 mod = Blueprint('profile', __name__)

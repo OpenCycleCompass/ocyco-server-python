@@ -2,9 +2,8 @@ from flask import Blueprint, jsonify, request
 
 from sqlalchemy import text
 
-from werkzeug.exceptions import abort
 from ocyco.database import db
-from ocyco.api.exceptions import OcycoException, ParameterInvalidException, ParameterMissingException, NotFoundException, ConflictExistingObjectException, MultipleMatchesException, PhotonException
+from ocyco.api.exceptions import ParameterMissingException
 
 mod = Blueprint('geo', __name__)
 
