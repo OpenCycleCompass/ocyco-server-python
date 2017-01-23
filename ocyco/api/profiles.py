@@ -41,7 +41,7 @@ def profiles_list():
     # language (default is 'de-DE')
     language = 'de-DE'
     # Check for lang fields present
-    if (json is not None) and (not ('lang' in json)):
+    if (json is not None) and ('lang' in json):
         language = json.get('lang')
     profile_list = {}
     for profile in Profiles.query.all():
