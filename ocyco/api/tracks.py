@@ -5,11 +5,12 @@ from flask import Blueprint, jsonify, request
 from sqlalchemy import func, text
 from sqlalchemy import or_
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
-from werkzeug.exceptions import abort
+
 from ocyco.database import db
 from ocyco.api.decorators import requires_authentication
 from ocyco.models.tracks import Tracks, TrackPoints
 from ocyco.utils import get_city_by_coordinates
+from ocyco.api.exceptions import ParameterMissingException, NotFoundException, MultipleMatchesException
 
 mod = Blueprint('track', __name__, url_prefix='/track')
 
@@ -82,9 +83,9 @@ def track_get(track_id):
         return jsonify(Tracks.query.filter(Tracks.id == track_id).one().to_dict_long())
     except MultipleResultsFound:
         # internal server error
-        abort(500, 'track exists multiple time in database')
+        raise MultipleMatchesException('track exists multiple times in database')
     except NoResultFound:
-        abort(404, 'track does not exist')
+        raise NotFoundException('track does not exist')
 
 
 @mod.route('/<int:track_id>', methods=['DELETE'])
@@ -106,9 +107,9 @@ def track_delete(track_id):
         })
     except MultipleResultsFound:
         # internal server error
-        abort(500, 'track exists multiple time in database')
+        raise MultipleMatchesException('track exists multiple times in database')
     except NoResultFound:
-        abort(410, 'track does not exist')
+        raise NotFoundException('track does not exist')
 
 
 @mod.route('/add', methods=['POST'])
@@ -120,10 +121,10 @@ def track_add():
     json = request.get_json()
     # Check for required fields present
     if not (('data' in json) and ('public' in json) and ('length' in json) and ('duration' in json)):
-        abort(400, 'some fields are missing in json')
+        raise ParameterMissingException('some fields are missing in JSON')
     for point in json['data']:
         if not (('lat' in point) and ('lon' in point) and ('time' in point)):
-            abort(401, 'data array is incorrect')
+            raise ParameterMissingException('data array is incorrect')
     # insert Track into database
     if 'created' in json:
         track_created = 0
